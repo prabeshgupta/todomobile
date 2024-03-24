@@ -1,8 +1,7 @@
-import { View, Text, TextInput, Button, StatusBar, StyleSheet, FlatList, Modal } from 'react-native'
+import { View, Text, TextInput, Button, StatusBar, StyleSheet, FlatList, Modal, Switch } from 'react-native'
 import React, { useState } from 'react'
 import Todo from './Todo'
 import { AntDesign } from '@expo/vector-icons';
-
 
 const TodoList = () => {
     const [todos, setTodos] = useState([])
@@ -10,6 +9,9 @@ const TodoList = () => {
     const [modal, setModal] = useState(false)
     const [editTodo, setEditTodo] = useState("")
     const [editInput, setEditInput] = useState("")
+    const [isEnabled, setIsEnabled] = useState(false)
+
+    const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
 
     const addTodo = () => {
         setTodos((prev) => [...prev, { id: Math.random() * 10000, data }])
@@ -39,21 +41,30 @@ const TodoList = () => {
     };
 
     return (
-        <View style={styles.container}>
-            <StatusBar barStyle='default' />
-            <Text style={styles.title}>ToDo App</Text>
+        <View style={[styles.container, { backgroundColor: isEnabled ? '#fff' : '#000' }]}>
+            <StatusBar barStyle={isEnabled ? 'default' : 'light-content'} />
+            <View style={styles.mode}>
+                <Text style={[styles.title, { color: isEnabled ? '#000' : '#fff' }]}>ToDo App</Text>
+                <Switch
+                    trackColor={{ true: 'green', false: 'rgba(255,255,255,0.4)' }}
+                    thumbColor="#fff"
+                    ios_backgroundColor="#3e3e3e"
+                    onValueChange={toggleSwitch}
+                    value={isEnabled}
+                />
+            </View>
             <View style={styles.inputContainer}>
                 <TextInput
                     placeholder='Things to do'
-                    style={styles.input}
-                    placeholderTextColor="#fff"
+                    style={[styles.input, { color: isEnabled ? '#000' : '#fff', borderColor: isEnabled ? '#000' : '#fff' }]}
+                    placeholderTextColor={isEnabled ? '#000' : '#fff'}
                     value={data}
                     onChangeText={setData}
                 />
                 <Button
                     title='Add'
-                    style={styles.btn}
                     onPress={addTodo}
+                    color={isEnabled ? "#000" : null}
                 />
             </View>
 
@@ -66,32 +77,35 @@ const TodoList = () => {
                             setTodos={setTodos}
                             setModal={setModal}
                             getData={getData}
+                            isEnabled={isEnabled}
                         />}
-                    keyExtractor={(item) => item.id}
+                    keyExtractor={(item) => item.id.toString()}
                 />
             </View>
 
             {/* Edit */}
             <Modal visible={modal} animationType='slide'>
-                <View style={styles.container}>
-                    <StatusBar barStyle='default' />
-                    <Text style={styles.title}>Edit List</Text>
-                    <AntDesign onPress={() => setModal(false)} style={styles.closeBtn} name="closecircle" size={24} color="white" />
+                <View style={[styles.container, { backgroundColor: isEnabled ? '#fff' : '#000' }]}>
+                    <StatusBar barStyle={isEnabled ? 'dark-content' : 'light-content'} />
+                    <View style={styles.mode}>
+                        <Text style={[styles.title, { color: isEnabled ? '#000' : '#fff' }]}>Edit List</Text>
+                        <AntDesign onPress={() => setModal(false)} style={styles.closeBtn} name="closecircle" size={23} color={isEnabled ? '#000' : '#fff'} />
+                    </View>
                     <TextInput
                         placeholder='Edit to do'
-                        style={[styles.input, { marginBottom: 15 }]}
-                        placeholderTextColor="#fff"
+                        style={[styles.input, { color: isEnabled ? '#000' : '#fff', borderColor: isEnabled ? '#000' : '#fff', marginBottom: 15 }]}
+                        placeholderTextColor={isEnabled ? '#000' : '#fff'}
                         value={editInput}
                         onChangeText={setEditInput}
                     />
                     <Button
-                        title='Add'
-                        style={styles.btn}
+                        title='Edit'
                         onPress={editTodoList}
+                        color={isEnabled ? '#000' : null}
                     />
                 </View>
             </Modal>
-        </View>
+        </View >
     )
 }
 
@@ -99,36 +113,30 @@ export default TodoList
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: "#000",
         padding: 20,
         flex: 1,
     },
+    mode: {
+        display: "flex",
+        flexDirection: "row",
+        alignItem: "center",
+        justifyContent: "space-between",
+        paddingBottom: 20,
+    },
     title: {
-        color: "#fff",
-        textAlign: "center",
-        paddingHorizontal: 15,
-        paddingBottom: 40,
         fontSize: 23,
-        fontWeight: "bold"
+        fontWeight: "bold",
+        marginTop: 5
     },
     inputContainer: {
-        gap: 15,
-    },
-    btn: {
-        borderRadius: 5,
-        fontWeight: "500",
-        fontSize: 16
+        gap: 17,
     },
     input: {
-        color: "#fff",
         borderWidth: 1.2,
-        borderColor: "#fff",
         padding: 14,
         borderRadius: 5,
     },
     closeBtn: {
-        position: "absolute",
-        top: 25,
-        left: 20
+        marginTop: 8
     }
 })

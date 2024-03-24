@@ -19,7 +19,7 @@ const Todo = ({ item, setTodos, setModal, getData, isEnabled }) => {
             <Text style={{ color: isEnabled ? "#000" : "#fff" }}>{item.data}</Text>
             <View style={styles.icons}>
                 <EvilIcons onPress={removeTodo} style={styles.trash} name="trash" size={28} color="red" />
-                <Feather onPress={openModal} style={styles.feather} name="edit" size={20} color="white" />
+                <Feather onPress={openModal} style={styles.feather} name="edit" size={20} color={isEnabled ? "black" : "white"} />
             </View>
         </View>
     )
